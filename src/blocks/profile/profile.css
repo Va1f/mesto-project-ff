@@ -4,12 +4,14 @@
 @import url('./__info/profile__info.css');
 @import url('./__title/profile__title.css');
 @import url('./__image/profile__image.css');
+@import url('./__update-avatar/__update-avatar.css');
 
 .profile {
   font-family: 'Inter', Arial, sans-serif;
   color: #fff;
   display: flex;
   align-items: center;
+  gap:30px;
   padding: 36px 0;
 }
 

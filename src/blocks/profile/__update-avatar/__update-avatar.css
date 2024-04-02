@@ -1,0 +1,29 @@
+.profile__image-container {
+    position: relative;
+    /* Другие стили для контейнера */
+  }
+  
+  .profile__image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный слой */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    cursor: pointer;
+  }
+  
+  .profile__image-container:hover .profile__image-overlay {
+    opacity: 1;
+  }
+  
+  .profile__edit-icon {
+    position: relative;
+    left: -10%; /* Сдвигаем влево относительно текущего положения */
+    /* Остальные стили иконки */
+  }

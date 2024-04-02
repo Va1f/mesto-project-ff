@@ -9,6 +9,16 @@
   padding: 34px 36px;
 }
 
+.popop__content_content_delete{
+  margin:15px;
+  min-height: 181px;
+  max-width: 430px;
+}
+
+.popup__content_avatarupdate{
+  min-height: 220px;
+}
+
 @media screen and (max-width: 568px) {
   .popup__content {
     width: 100%;

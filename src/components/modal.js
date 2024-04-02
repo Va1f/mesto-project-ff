@@ -20,3 +20,6 @@ export function closePopupByOverlay(popup) {
       if (e.target === e.currentTarget) closePopup(popup);
     });
   }
+
+
+  
