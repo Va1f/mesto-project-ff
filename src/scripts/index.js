@@ -1,5 +1,5 @@
 import "../pages/index.css";
-import { createCard,handleLikeClick } from "../components/card.js";
+import { createCard, handleLikeClick } from "../components/card.js";
 import { openPopup, closePopup, closePopupByOverlay } from "../components/modal.js";
 import { enableValidation, clearValidation } from "../components/validation.js";
 import * as Api from "../components/Api.js";
@@ -37,8 +37,7 @@ function fetchUserInfo() {
   Api.fetchUserInfo()
     .then(data => {
       updateProfileInfo(data);
-    })
-    .catch(err => console.error(err));
+    });
 }
 
 function updateProfileInfo(userData) {
@@ -98,7 +97,6 @@ function handleProfileEditFormSubmit(evt) {
       profileJob.textContent = userInfo.about;
       closePopup(editProfilePopup);
     })
-    .catch(err => console.error('Ошибка при сохранении информации о пользователе:', err))
     .finally(() => {
       submitButton.textContent = initialButtonText;
     });
@@ -126,7 +124,6 @@ function handleAddPlaceSubmit(evt) {
           addPlaceForm.reset();
         });
     })
-    .catch(err => console.error('Ошибка при добавлении новой карточки:', err))
     .finally(() => {
       submitButton.textContent = initialButtonText;
     });
@@ -151,8 +148,7 @@ function handleConfirmDelete(evt) {
       const cardElement = document.querySelector(`[data-card-id="${cardIdToDelete}"]`);
       cardElement.remove();
       closePopup(confirmDeletePopup);
-    })
-    .catch(err => console.error('Ошибка при удалении карточки:', err));
+    });
 }
 
 function openAvatarUpdatePopup() {
@@ -176,7 +172,6 @@ function handleAvatarFormSubmit(evt) {
       }
       closePopup(document.querySelector(".popup_type_avatar"));
     })
-    .catch(err => console.error('Ошибка при обновлении аватара:', err))
     .finally(() => {
       submitButton.textContent = initialButtonText;
     });
