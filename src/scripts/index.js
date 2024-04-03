@@ -1,5 +1,5 @@
 import "../pages/index.css";
-import { createCard, updateLikeCounter, updateLikeButtonState } from "../components/card.js";
+import { createCard,handleLikeClick } from "../components/card.js";
 import { openPopup, closePopup, closePopupByOverlay } from "../components/modal.js";
 import { enableValidation, clearValidation } from "../components/validation.js";
 import * as Api from "../components/Api.js";
@@ -23,7 +23,7 @@ const editAvatarIcon = document.querySelector('.profile__edit-icon');
 document.querySelector('.profile__image-overlay').addEventListener('click', openAvatarUpdatePopup);
 
 editAvatarIcon.addEventListener("click", openAvatarUpdatePopup);
-
+let cardIdToDelete;
 enableValidation({
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -67,33 +67,15 @@ clearValidation(addPlaceFormElement, {
   inactiveButtonClass: 'popup__button_disabled',
 });
 
-function handleDeleteClick(cardElement) {
+function handleDeleteClick(cardId) {
   const confirmDeletePopup = document.querySelector('.popup_type_confirm-delete');
   openPopup(confirmDeletePopup);
   
-  cardIdToDelete = cardElement.getAttribute('data-card-id');
-}
+  // Установить значение cardIdToDelete
+  cardIdToDelete = cardId;
 
-function handleLikeClick(cardId) {
+  // Нужно получить DOM элемент карточки, используя cardId
   const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
-  const likeButton = cardElement.querySelector(".card__like-button");
-  const isLiked = likeButton.classList.contains("card__like-button_is-active");
-  
-  if (isLiked) {
-    Api.removeLike(cardId)
-      .then(updatedCard => {
-        updateLikeCounter(cardElement, updatedCard.likes.length); // Pass cardElement to updateLikeCounter
-        updateLikeButtonState(likeButton, false); // Also update the like button state directly
-      })
-      .catch(err => console.error('Ошибка при снятии лайка:', err));
-  } else {
-    Api.addLike(cardId)
-      .then(updatedCard => {
-        updateLikeCounter(cardElement, updatedCard.likes.length); // Pass cardElement to updateLikeCounter
-        updateLikeButtonState(likeButton, true); // Also update the like button state directly
-      })
-      .catch(err => console.error('Ошибка при постановке лайка:', err));
-  }
 }
 
 function fillProfileForm() {
@@ -131,12 +113,18 @@ function handleAddPlaceSubmit(evt) {
   const placeName = addPlaceForm.querySelector(".popup__input_type_card-name").value;
   const placeLink = addPlaceForm.querySelector(".popup__input_type_url").value;
 
-  Api.saveNewCard(placeName, placeLink)
-    .then(newCardData => {
-      const newCard = createCard(newCardData, openImagePopup, handleDeleteClick, handleLikeClick);
-      placesList.prepend(newCard);
-      closePopup(addPlacePopup);
-      addPlaceForm.reset();
+  // Получаем информацию о пользователе
+  Api.fetchUserInfo()
+    .then(userInfo => {
+      // Сохраняем новую карточку
+      return Api.saveNewCard(placeName, placeLink)
+        .then(newCardData => {
+          // Создаем карточку и добавляем ее на страницу
+          const newCard = createCard(newCardData, userInfo._id, openImagePopup, handleDeleteClick, handleLikeClick, false);
+          placesList.prepend(newCard);
+          closePopup(addPlacePopup);
+          addPlaceForm.reset();
+        });
     })
     .catch(err => console.error('Ошибка при добавлении новой карточки:', err))
     .finally(() => {
@@ -215,8 +203,6 @@ function setEventListeners() {
   });
   confirmDeleteButton.addEventListener('click', handleConfirmDelete);
 }
-
-let cardIdToDelete;
 
 function initApp() {
   setEventListeners();

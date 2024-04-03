@@ -1,6 +1,34 @@
-import * as Api from "../components/Api.js";
+import * as Api from "../components/Api";
 
-export function createCard({ name, link, likes, owner, _id }, currentUserID, handleCardClick, handleDeleteClick, handleLikeClick) {
+function updateLikeCounter(cardElement, likesCount) {
+  const likeCounter = cardElement.querySelector(".card__like-counter");
+  likeCounter.textContent = likesCount;
+}
+
+function updateLikeButtonState(likeButton, isLiked) {
+  if (isLiked) {
+    likeButton.classList.add("card__like-button_is-active");
+  } else {
+    likeButton.classList.remove("card__like-button_is-active");
+  }
+}
+
+
+export function handleLikeClick(cardId) {
+  const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
+  const likeButton = cardElement.querySelector(".card__like-button");
+  const isLiked = likeButton.classList.contains("card__like-button_is-active");
+
+  // Выбор действия на основе текущего состояния лайка
+  const action = isLiked ? Api.removeLike : Api.addLike;
+
+  action(cardId).then(updatedCard => {
+    updateLikeCounter(cardElement, updatedCard.likes.length);
+    updateLikeButtonState(likeButton, !isLiked);
+  }).catch(err => console.error('Ошибка при изменении лайка:', err));
+}
+
+export function createCard({ name, link, likes, owner, _id }, currentUserID, handleCardClick, handleDeleteClick, showDeleteButton = true) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
   
@@ -11,32 +39,24 @@ export function createCard({ name, link, likes, owner, _id }, currentUserID, han
   
   image.addEventListener("click", () => handleCardClick(link, name));
   
-  const deleteButton = cardElement.querySelector(".card__delete-button");
-
-  // Check if the current user is the owner of the card
-  if (owner._id === currentUserID) {
-   deleteButton.addEventListener("click", () => handleDeleteClick(cardElement));
+  if (owner._id === currentUserID && showDeleteButton) {
+    const deleteButton = cardElement.querySelector(".card__delete-button");
+    deleteButton.addEventListener("click", () => handleDeleteClick(_id));
   } else {
-    deleteButton.remove(); // If the current user is not the owner, remove the delete button
+    cardElement.querySelector(".card__delete-button").remove();
   }
 
   const likeButton = cardElement.querySelector(".card__like-button");
-  const likeCounter = cardElement.querySelector(".card__like-counter");
+  likeButton.addEventListener("click", () => handleLikeClick(_id));
 
-  // Set initial state of the like button and like counter
   const isLikedByCurrentUser = likes.some(like => like._id === currentUserID);
   updateLikeButtonState(likeButton, isLikedByCurrentUser);
 
-  likeButton.addEventListener("click", () => handleLikeClick(_id, isLikedByCurrentUser));
-
-  likeCounter.textContent = likes.length; // Display the number of likes
-
-  // Add data-card-id attribute with _id of the card
+  updateLikeCounter(cardElement, likes.length);
   cardElement.setAttribute('data-card-id', _id);
 
   return cardElement;
 }
-
 export function addLike(cardId) {
   return Api.addLike(cardId)
     .then(updatedCard => {
@@ -57,19 +77,4 @@ export function removeLike(cardId) {
       updateLikeButtonState(likeButton, false);
     })
     .catch(err => console.error('Error while removing like:', err));
-}
-
-export function updateLikeCounter(cardElement, likesCount) {
-  const likeCounter = cardElement.querySelector(".card__like-counter");
-  likeCounter.textContent = likesCount;
-}
-
-export function updateLikeButtonState(likeButton, isLiked) {
-  if (likeButton) {
-    if (isLiked) {
-      likeButton.classList.add("card__like-button_is-active");
-    } else {
-      likeButton.classList.remove("card__like-button_is-active");
-    }
-  }
 }

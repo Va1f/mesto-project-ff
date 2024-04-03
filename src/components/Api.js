@@ -127,6 +127,7 @@ export const deleteCard = (cardId) => {
   });
 };
 
+
 export const updateUserAvatar = (url) => {
   return fetch(`${config.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
