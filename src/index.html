@@ -23,11 +23,18 @@
           <div class="profile__image-container">
             <div
               class="profile__image"
-              style="background-image: url('<%=require(`./images/avatar.jpg`)%>')">
+              style="
+                background-image: url('<%=require(`./images/avatar.jpg`)%>');
+              "
+            >
               <!-- Пусто, так как фоновое изображение задается инлайново -->
             </div>
             <div class="profile__image-overlay">
-              <img src="<%=require(`./images/vector.svg`)%>" alt="Edit" class="profile__edit-icon">
+              <img
+                src="<%=require(`./images/vector.svg`)%>"
+                alt="Edit"
+                class="profile__edit-icon"
+              />
             </div>
           </div>
           <div class="profile__info">
@@ -57,11 +64,11 @@
                 placeholder="Имя"
                 minlength="2"
                 maxlength="40"
-                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы, от 2 до 40 символов"
                 pattern="[A-Za-zА-Яа-яЁё\s\-]+"
                 required
               />
-              <span class="popup__input-error"></span>
+              <span class="popup__input-error popup__error_visible"></span>
             </label>
             <label class="popup__field">
               <input
@@ -71,9 +78,10 @@
                 placeholder="Занятие"
                 minlength="2"
                 maxlength="200"
+                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы, от 2 до 200 символов"
                 required
               />
-              <span class="popup__input-error"></span>
+              <span class="popup__input-error popup__error_visible"></span>
             </label>
             <button type="submit" class="button popup__button">
               Сохранить
@@ -95,10 +103,10 @@
                 minlength="2"
                 maxlength="30"
                 required
-                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+                data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы, от 2 до 40 символов"
                 pattern="[A-Za-zА-Яа-яЁё\s\-]+"
               />
-              <span class="popup__input-error"></span>
+              <span class="popup__input-error popup__error_visible"></span>
             </label>
             <label class="popup__field">
               <input
@@ -107,8 +115,9 @@
                 class="popup__input popup__input_type_url"
                 placeholder="Ссылка на картинку"
                 required
+                pattern="https?://.+"
               />
-              <span class="popup__input-error"></span>
+              <span class="popup__input-error popup__error_visible"></span>
             </label>
             <button type="submit" class="button popup__button">
               Сохранить
@@ -152,9 +161,10 @@
               name="avatar-link"
               class="popup__input popup__input_type_avatar-link"
               placeholder="Ссылка на новый аватар"
+              pattern="https?://.+"
               required
             />
-            <span class="popup__input-error"></span>
+            <span class="popup__input-error popup__error_visible"></span>
           </label>
           <button type="submit" class="button popup__button">Сохранить</button>
         </form>
