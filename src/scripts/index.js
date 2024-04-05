@@ -71,37 +71,33 @@ function handleDeleteClick(cardId) {
 
 function handleProfileEditFormSubmit(evt) {
   evt.preventDefault();
+  const submitButton = evt.target.querySelector('.popup__button');
+  submitButton.textContent = 'Сохранение...';
   api
     .saveUserInfo(nameInput.value, jobInput.value)
     .then(updateProfileInfo)
     .then(() => closePopup(editProfilePopup))
-    .catch((error) =>
-      console.error("Ошибка при сохранении информации о пользователе:", error)
-    );
+    .catch((error) => console.error("Ошибка при сохранении информации о пользователе:", error))
+    .finally(() => submitButton.textContent = 'Сохранить');
 }
 
 function handleAddPlaceSubmit(evt) {
   evt.preventDefault();
+  const submitButton = evt.target.querySelector('.popup__button');
+  submitButton.textContent = 'Сохранение...';
   const placeName = addPlaceForm.elements["place-name"].value;
   const placeLink = addPlaceForm.elements["link"].value;
   api
     .saveNewCard(placeName, placeLink)
     .then((newCardData) => {
-      placesList.prepend(
-        createCard(
-          newCardData,
-          userId,
-          openImagePopup,
-          handleDeleteClick,
-          handleLikeClick
-        )
-      );
+      placesList.prepend(createCard(newCardData, userId, openImagePopup, handleDeleteClick, handleLikeClick));
       closePopup(addPlacePopup);
     })
-    .catch((error) =>
-      console.error("Ошибка при добавлении новой карточки:", error)
-    )
-    .finally(() => addPlaceForm.reset());
+    .catch((error) => console.error("Ошибка при добавлении новой карточки:", error))
+    .finally(() => {
+      submitButton.textContent = 'Создать';
+      addPlaceForm.reset();
+    });
 }
 
 function openImagePopup(link, name) {
@@ -128,14 +124,16 @@ function openAvatarUpdatePopup() {
 
 function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
+  const submitButton = evt.target.querySelector('.popup__button');
+  submitButton.textContent = 'Сохранение...';
   api
     .updateUserAvatar(avatarUrlInput.value)
     .then(updateProfileInfo)
     .then(() => closePopup(avatarUpdatePopup))
-    .catch((error) =>
-      console.error("Ошибка при обновлении аватара пользователя:", error)
-    );
+    .catch((error) => console.error("Ошибка при обновлении аватара пользователя:", error))
+    .finally(() => submitButton.textContent = 'Сохранить');
 }
+
 
 // Установка слушателей событий
 function setEventListeners() {
@@ -171,20 +169,11 @@ function setEventListeners() {
 
 function initApp() {
   setEventListeners();
-  api.fetchUserInfo().then(updateProfileInfo);
-  api
-    .loadInitialCards()
-    .then((cards) => {
+  Promise.all([api.fetchUserInfo(), api.loadInitialCards()])
+    .then(([userData, cards]) => {
+      updateProfileInfo(userData);
       cards.forEach((cardData) => {
-        placesList.appendChild(
-          createCard(
-            cardData,
-            userId,
-            openImagePopup,
-            handleDeleteClick,
-            handleLikeClick
-          )
-        );
+        placesList.appendChild(createCard(cardData, userId, openImagePopup, handleDeleteClick, handleLikeClick));
       });
     })
     .catch((err) => console.error("Ошибка инициализации приложения:", err));
