@@ -18,7 +18,6 @@ export function handleLikeClick(cardId) {
   const likeButton = cardElement.querySelector(".card__like-button");
   const isLiked = likeButton.classList.contains("card__like-button_is-active");
 
-  // Выбор действия на основе текущего состояния лайка
   const action = isLiked ? Api.removeLike : Api.addLike;
 
   action(cardId)
